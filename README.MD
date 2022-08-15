@@ -2,5 +2,8 @@
 
 ## solidity version
 
-<= 0.7.0  and < 0.9.0
+\>= 0.8.0
 
+## SPDX-License-Identifier
+
+AGPL-3.0
