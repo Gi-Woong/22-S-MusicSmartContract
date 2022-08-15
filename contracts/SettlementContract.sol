@@ -48,7 +48,7 @@ contract SettlementContract {
     }
 
     // 주소 접근 방지
-    modi    fier modAfterContstruct(address msgsender) {
+    modifier modAfterContstruct(address msgsender) {
         require(msgsender == address(seller), "msgsender != address(seller)");
         _;
     }
