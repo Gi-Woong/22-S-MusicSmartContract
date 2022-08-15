@@ -11,6 +11,7 @@ contract SellerContract {
     // uint public sellerContractDate; // 거래 생성 일시
     address private contractInitatorAddress; // contract 호출자 주소
     address public settlementContractAddress; // 왜?)계약서 주소를 알아야 함.
+    bytes32 public keccak256Hash; //백엔드 서버 체크용
     bool public madeContract;
 
     modifier checkAccesser(address msgsender) {
@@ -57,6 +58,7 @@ contract SellerContract {
         songPrice = price;
         // sellerContractDate = block.timestamp;
         contractInitatorAddress = msg.sender;
+        keccak256Hash = keccak256(abi.encode(_addresses, _proportions, _songId, price));
     }
 
 }
