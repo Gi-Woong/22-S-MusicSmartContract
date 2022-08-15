@@ -1,55 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.0;
-
-contract Buyer {
-    address public buyerAddress;
-    uint public wantToBuy; //음원 id
-    uint public buyerContractDate;
-
-    event log(address _address);
-
-    constructor(address _address, uint toBuy) {
-        buyerAddress = _address;
-        wantToBuy = toBuy;
-        buyerContractDate = block.timestamp;
-        emit log(buyerAddress);
-    }
-}
-
-contract Seller {
-    address public uploaderAddress;
-    address[] private sellerAddresses;
-    uint[] private proportion; 
-    address private contractCallerAddress;
-    uint public uploadedSong;
-    uint public sellerContractDate;
-    uint public songPrice;
-
-    modifier callerCheck(address sender) {
-        require(contractCallerAddress == sender, "contractCallerAddress != sender");
-        _;
-    }
-    
-    function getsellerAddresses() public view callerCheck(msg.sender) returns(address[] memory) {
-        return sellerAddresses;
-    }
-    function getProportion() public view callerCheck(msg.sender) returns(uint[] memory) {
-        return proportion;
-    }  
-    // event log(address[] _address);
-    constructor(address _uploaderAddress, address[] memory _addresses, uint[] memory _proportions, uint toUpload, uint price) {
-        uploaderAddress = _uploaderAddress;
-        sellerAddresses = _addresses;
-        proportion = _proportions;
-        contractCallerAddress = msg.sender;
-        uploadedSong = toUpload;
-        songPrice = price;
-        sellerContractDate = block.timestamp;
-        // emit log(sellerAddresses);
-    }
-}
-
 // 재사용 가능 컨트렉트
+
+import "./Seller.sol";
+import "./Buyer.sol";
 
 contract MusicContract {
     Buyer buyer;
@@ -58,10 +12,10 @@ contract MusicContract {
     address owner;
     uint contractDate;
 
-    bool private alreadySetBuyer = false;
-    bool private alreadySetSeller = false;
-    bool contractEnd = false;
-    uint private index = 0;    
+    bool private alreadySetBuyer = false; //거래가 끝날 때까지 true
+    bool private alreadySetSeller = false; //한번 등록하면 영원히 true
+    bool private contractEnd = false; //거래 종료 여부
+    uint private index = 0; //정산 차례
 
     modifier mustCheck() {
         require(buyer.wantToBuy() == seller.uploadedSong(), "buyer.wantToBuy() != seller.uploadedSong()");
@@ -92,15 +46,12 @@ contract MusicContract {
         require(msg.sender.balance > amount, "msg.sender.balance <= amount");
         require(amount == seller.songPrice(), "amount != seller.songPrice()");
         require(amount == msg.value, "amount != msg.value");
-        // require(amount == address(this).balance, "amount != address(this).balance");
         _;
-        require(address(this).balance == seller.songPrice(), "!address(this).balance == seller.songPrice");
+        require(address(this).balance == seller.songPrice(), "!address(this).balance != seller.songPrice");
     }
 
     modifier modWithdrawToSeller() {
         require(!contractEnd, "contractEnd.");
-        //require(msg.sender == seller.uploaderAddress(), "msg.sender != seller.sellerAddresses()");
-        // require(address(this).balance > 0, "address(this).balance <= 0" ); //0원일 때 호출 방지
         _;
     }
 
@@ -139,11 +90,6 @@ contract MusicContract {
             alreadySetBuyer = false;
         }
     }
-
-    // function withdrawByowner() public payable mustCheck() {
-    //     require(msg.sender == owner, "Only owner can call this function.");
-    //     payable(msg.sender).transfer(address(this).balance);
-    // }
 
     function getBalance() public view returns(uint) {
         return address(this).balance;
