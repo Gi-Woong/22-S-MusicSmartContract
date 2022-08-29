@@ -43,6 +43,15 @@ export const ca = {
   getAddress: (result) => {
     return result.options.address;
   },
+  isSameHash: (addresses, proportions, keccak256Hash) => {
+    let hash = ca.web3.utils.keccak256(
+      ca.web3.eth.abi.encodeParameters(
+        ["address[]", "uint256[]"],
+        [addresses, proportions]
+      )
+    );
+    return hash === keccak256Hash;
+  },
   deployContract: async (
     abi,
     bin,
@@ -94,15 +103,6 @@ export const ca = {
       },
     },
     events: {},
-  },
-  isSameHash: (addresses, proportions, keccak256Hash) => {
-    let hash = ca.web3.utils.keccak256(
-      ca.web3.eth.abi.encodeParameters(
-        ["address[]", "uint256[]"],
-        [addresses, proportions]
-      )
-    );
-    return hash === keccak256Hash;
   },
   settlementContract: {
     setContractInstance: (contractInstance) => {
