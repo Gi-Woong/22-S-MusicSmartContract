@@ -35,7 +35,7 @@ async function main() {
   const sellerContractInstance = await ca.deployContract(
     sellerAbi,
     sellerBytecode,
-    [web3.utils.utf8ToHex(1)],
+    [ca.utf8ToHex(1)],
     contractCreator
   );
   ca.sellerContract.setContractInstance(sellerContractInstance);
