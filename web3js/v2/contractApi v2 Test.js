@@ -70,6 +70,10 @@ async function main() {
   let songCidGot = ca.hexToUtf8(
     await ca.settlementContract.variables.getSongCid()
   );
+  let keccak256Hash = await ca.settlementContract.variables.getKeccak256Hash();
+  console.log(
+    `isSameHash: ${ca.isSameHash(addresses, proportions, keccak256Hash)}`
+  );
   console.log(`getSongCid:\t\t${songCidGot}`);
   console.log(
     "Original songCid:\tQmberjDV3Y3WUbvjpMS2EEycMP9z2WcWR7iYQ79ZZgfZN5"

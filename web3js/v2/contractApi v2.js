@@ -95,6 +95,15 @@ export const ca = {
     },
     events: {},
   },
+  isSameHash: (addresses, proportions, keccak256Hash) => {
+    let hash = ca.web3.utils.keccak256(
+      ca.web3.eth.abi.encodeParameters(
+        ["address[]", "uint256[]"],
+        [addresses, proportions]
+      )
+    );
+    return hash === keccak256Hash;
+  },
   settlementContract: {
     setContractInstance: (contractInstance) => {
       ca.settlementContractInstance = contractInstance;
