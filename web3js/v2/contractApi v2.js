@@ -52,6 +52,9 @@ export const ca = {
     );
     return hash === keccak256Hash;
   },
+  getContractInstance: async (abi, address = null) => {
+    return await new ca.web3.eth.Contract(abi, address);
+  },
   deployContract: async (
     abi,
     bin,
