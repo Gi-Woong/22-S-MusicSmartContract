@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider@1.2.0/dist/detect-provider.min.js"></script>
+    <!-- <script src="./js/@metamask-detect-provider_v1.2.0_min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.5/dist/web3.min.js"></script>
+    <script type="module" src="./js/contracts.js"></script>
+    <script type="module" src="./js/service.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <ol>
+      <li>
+        <button id="deployContracts">deploy Contracts</button> 클릭<br />
+        (SellerContract 배포, SettlementContract 배포 둘다 순차적으로 진행)
+      </li>
+      <li><button id="buy">buy</button> 클릭</li>
+      <li><button id="settle">settle</button> 클릭</li>
+    </ol>
+  </body>
+</html>
