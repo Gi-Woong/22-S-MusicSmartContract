@@ -1,7 +1,7 @@
 import * as ca from "./contracts.js";
 ca.init().then(() => {
   document
-    .getElementById("deployContracts")
+    .querySelector(".deployContracts")
     .addEventListener("click", async () => {
       console.log("deployContracts button clicked");
       // deploy SellerContract
@@ -32,12 +32,12 @@ ca.init().then(() => {
       console.log("deployContract done");
     });
 
-  document.getElementById("buy").addEventListener("click", async () => {
+  document.querySelector(".buy").addEventListener("click", async () => {
     const result = await ca.settlementContract.buy();
     console.log(`buy() Transaction: ${result.transactionHash}`);
   });
 
-  document.getElementById("settle").addEventListener("click", async () => {
+  document.querySelector(".settle").addEventListener("click", async () => {
     const result = await ca.settlementContract.settle();
     console.log(`settle() Transaction: ${result.transactionHash}`);
   });
