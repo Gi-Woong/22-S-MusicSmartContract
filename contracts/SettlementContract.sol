@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.0.0;
 
-import "./SellerContract.sol";
-
 contract SettlementContract {
     uint256 public price;
     uint256 public cumulativeSales = 0;
@@ -49,8 +47,8 @@ contract SettlementContract {
         selfdestruct(payable(owner));
     }
 
-    constructor(address scAddress, address[] memory _addresses, uint256[] memory _proportions, bytes32[2] memory _songCid, uint256 _price) {  
-        owner = SellerContract(scAddress).contractInitatorAddress();
+    constructor(address[] memory _addresses, uint256[] memory _proportions, bytes32[2] memory _songCid, uint256 _price) {  
+        owner = msg.sender;
         keccak256Hash = keccak256(abi.encode(_addresses, _proportions));
         songCid = _songCid; 
         price = _price;
