@@ -5,18 +5,18 @@ ca.init().then(() => {
     .addEventListener("click", async () => {
       console.log("deployContracts button clicked");
       // deploy SellerContract
-      const userId = "1";
+      const userId = "14";
       const sellerContractInstance = await ca.deployContract.seller(userId);
       console.log("sellerContract deployed");
 
       // deploy SettlementContract
       const scAddress = sellerContractInstance.options.address;
       const addresses = [
-        "0x0bd2fC01Ddd8472d73F0ff674bA12Edd792FcB8d",
         "0x1Fb5Fd68e9b34F8aF64d3B5e2D80ad9Df96F703B",
+        "0x9ba5f78235AB268e92615a2370a81aBB2E79C9eb",
       ];
       const proportions = [5000, 5000];
-      const SongCid = "QmberjDV3Y3WUbvjpMS2EEycMP9z2WcWR7iYQ79ZZgfZN5";
+      const SongCid = "QmWZipPtKnuVkn1mwNMqEw8apx513me2B3aCByCchsCmHk";
       const price = "90000000000000000";
       const settlementContractInstance = await ca.deployContract.settlement(
         scAddress,
