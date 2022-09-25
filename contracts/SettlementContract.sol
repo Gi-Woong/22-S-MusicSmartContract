@@ -18,7 +18,6 @@ contract SettlementContract {
     function buy() public payable {
         require(
             price == msg.value &&
-            msg.value % 10000 == 0 &&
             cumulativeSales < type(uint256).max //prevent overflow
         );
         cumulativeSales += 1;
@@ -48,6 +47,7 @@ contract SettlementContract {
     }
 
     constructor(address[] memory _addresses, uint256[] memory _proportions, bytes32[2] memory _songCid, uint256 _price) {  
+        require(_price % 10000 == 0);
         owner = msg.sender;
         keccak256Hash = keccak256(abi.encode(_addresses, _proportions));
         songCid = _songCid; 
