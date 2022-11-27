@@ -35,7 +35,7 @@ contract SettlementContract {
         );
 
         uint amount = price / 10000 * caller.proportion * (cumulativeSales - caller.count);
-        caller.count = cumulativeSales;
+        copyrightHolders[msg.sender].count = cumulativeSales;
         payable(msg.sender).transfer(amount);
         emit logRecieverInfo(msg.sender, songCid, amount);
     }
