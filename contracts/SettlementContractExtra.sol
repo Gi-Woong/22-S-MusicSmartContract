@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.2.0;
 
-import "./NFT1155.sol";
+// import "./NFT1155.sol";
+import "./FT1155.sol";
 
 contract SettlementContractExtra {
     uint256 public price;
@@ -16,25 +17,33 @@ contract SettlementContractExtra {
         uint256 proportion;
         uint256 count;
     }
+    mapping (address => bool) registered;
 
-    // caller: NFT1155
-    function registerNftContract(address _owner) public {
-        address zeroAddress;
-        require(nftContractAddress == zeroAddress, "already registered NFTContract.");
-        require(copyrightHolders[_owner].proportion > 0, "not a CopyrightHolder.");
-        require(NFT1155(msg.sender).settlementContract() == address(this), "Not a matching NFT contract.");
-        nftContractAddress = msg.sender;
+
+    function registerFtAddress() public {
+        require(copyrightHolders[FT1155(msg.sender).owner()].proportion > 0, "not a copyrightHolder");
+        require(!registered[msg.sender], "already registered.");
+        registered[msg.sender] = true;
     }
 
-    //caller: NFT1155
-    function changeCopyrightHolder(address prev, uint256 _amount, address _new) public {
-        require(nftContractAddress == msg.sender, "not matching NFT contract!");
-        require(NFT1155(msg.sender).settlementContract() == address(this), "settlementContractAddress is not matching!");
-        // uint256 balance = NFT1155(msg.sender).balanceOf(_new, uint256(uint160(prev)));
-        // require( balance >= 1, "not a NFT owner!");
-        copyrightHolders[prev] = copyrightHolder(copyrightHolders[prev].proportion - _amount, 0);
-        copyrightHolders[_new] = copyrightHolder(copyrightHolders[_new].proportion + _amount, 0);
-    }
+    // // caller: NFT1155
+    // function registerNftContract(address _owner) public {
+    //     address zeroAddress;
+    //     require(nftContractAddress == zeroAddress, "already registered NFTContract.");
+    //     require(copyrightHolders[_owner].proportion > 0, "not a CopyrightHolder.");
+    //     require(NFT1155(msg.sender).settlementContract() == address(this), "Not a matching NFT contract.");
+    //     nftContractAddress = msg.sender;
+    // }
+
+    // //caller: NFT1155
+    // function changeCopyrightHolder(address prev, uint256 _amount, address _new) public {
+    //     require(nftContractAddress == msg.sender, "not matching NFT contract!");
+    //     require(NFT1155(msg.sender).settlementContract() == address(this), "settlementContractAddress is not matching!");
+    //     // uint256 balance = NFT1155(msg.sender).balanceOf(_new, uint256(uint160(prev)));
+    //     // require( balance >= 1, "not a NFT owner!");
+    //     copyrightHolders[prev] = copyrightHolder(copyrightHolders[prev].proportion - _amount, 0);
+    //     copyrightHolders[_new] = copyrightHolder(copyrightHolders[_new].proportion + _amount, 0);
+    // }
 
     /////////////////////////////////////////////
 
@@ -58,8 +67,21 @@ contract SettlementContractExtra {
             cumulativeSales < type(uint256).max
         );
 
-        uint amount = price / 10000 * caller.proportion * (cumulativeSales - caller.count);
+        uint256 amount = price / 10000 * caller.proportion * (cumulativeSales - caller.count);
         copyrightHolders[msg.sender].count = cumulativeSales;
+        payable(msg.sender).transfer(amount);
+        emit logRecieverInfo(msg.sender, songCid, amount);
+    }
+
+    function settleByFT(address[] memory ftAddresses) public {
+        uint256 amount = 0;
+        for(uint i=0; i<ftAddresses.length; i++) {
+            address ftOwner = FT1155(ftAddresses[i]).owner();
+            require(registered[ftAddresses[i]], "not registered.");
+            require(copyrightHolders[ftOwner].proportion > 0, "not a copyrightHolder");
+            uint256 balance = FT1155(ftAddresses[i]).balanceOf(msg.sender, FT1155(ftAddresses[i]).tokenId());
+            amount += price / 10000 * balance * (cumulativeSales - copyrightHolders[ftOwner].count);
+        }
         payable(msg.sender).transfer(amount);
         emit logRecieverInfo(msg.sender, songCid, amount);
     }
