@@ -11,14 +11,12 @@ contract SettlementContractExtra {
     bytes32[2] public songCid;
     address public nftContractAddress;
 
-    // TODO: 중복 정산 방지 해결책 마련 필요
     mapping (address => copyrightHolder) public copyrightHolders;
     struct copyrightHolder {
         uint256 proportion;
         uint256 count;
     }
 
-    // TODO: 새로운 NFT contract를 생성해서 공격하는 경우를 막아야 함.
     // caller: NFT1155
     function registerNftContract(address _owner) public {
         address zeroAddress;
@@ -28,26 +26,14 @@ contract SettlementContractExtra {
         nftContractAddress = msg.sender;
     }
 
-    // function newme() public returns(address) {
-    //     nftContractAddress = address(new NFT1155("0xd9145CCE52D386f254917e481eB44e9943F39138", address(this)));
-    //     return nftContractAddress;
-    // }
-
-    // function createNFTContract(string memory dirCid) public {
-    //     require(copyrightHolders[msg.sender].proportion > 0, "Not a copyrightHolder");
-    //     require(!isNFTContractExist, "nftContract is already deployed");
-    //     new NFT1155(dirCid, address(this));
-    // }
-
-    //함수 실행자: NFT1155
-    //seller: 토큰 판매자 주소
-    function changeCopyrightHolder(address prevCopyrightHolder, uint256 id, address newCopyrightHolder) public {
-        require(nftContractAddress == msg.sender, "not matching NFTcontract!");
-        require(NFT1155(msg.sender).settlementContract() == address(this), "not matching NFT contract!");
-        require(NFT1155(msg.sender).balanceOf(newCopyrightHolder, id) >= 1, "not a NFT owner");
-        copyrightHolder memory temp = copyrightHolders[prevCopyrightHolder];
-        copyrightHolders[prevCopyrightHolder] = copyrightHolder(0, 0);
-        copyrightHolders[newCopyrightHolder] = temp;
+    //caller: NFT1155
+    function changeCopyrightHolder(address prev, uint256 _amount, address _new) public {
+        require(nftContractAddress == msg.sender, "not matching NFT contract!");
+        require(NFT1155(msg.sender).settlementContract() == address(this), "settlementContractAddress is not matching!");
+        // uint256 balance = NFT1155(msg.sender).balanceOf(_new, uint256(uint160(prev)));
+        // require( balance >= 1, "not a NFT owner!");
+        copyrightHolders[prev] = copyrightHolder(copyrightHolders[prev].proportion - _amount, 0);
+        copyrightHolders[_new] = copyrightHolder(copyrightHolders[_new].proportion + _amount, 0);
     }
 
     /////////////////////////////////////////////
@@ -96,4 +82,3 @@ contract SettlementContractExtra {
         require(copyrightHolders[owner].proportion > 0, "not a CopyrightHolder");
     }
 }
- 
