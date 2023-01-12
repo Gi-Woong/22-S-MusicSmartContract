@@ -10,42 +10,22 @@ contract SettlementContractExtra {
     address public owner;
     bytes32 public keccak256Hash;
     bytes32[2] public songCid;
-    address public nftContractAddress;
+    // address public nftContractAddress;
 
     mapping (address => copyrightHolder) public copyrightHolders;
     struct copyrightHolder {
         uint256 proportion;
         uint256 count;
     }
-    mapping (address => bool) registered;
+    mapping (address => address) registered;
 
 
     function registerFtAddress() public {
-        require(copyrightHolders[FT1155(msg.sender).owner()].proportion > 0, "not a copyrightHolder");
-        require(!registered[msg.sender], "already registered.");
-        registered[msg.sender] = true;
+        address ftMinter = FT1155(msg.sender).owner(); 
+        require(copyrightHolders[ftMinter].proportion > 0, "not a copyrightHolder");
+        require(registered[ftMinter] == address(0), "already registered.");
+        registered[ftMinter] = msg.sender;
     }
-
-    // // caller: NFT1155
-    // function registerNftContract(address _owner) public {
-    //     address zeroAddress;
-    //     require(nftContractAddress == zeroAddress, "already registered NFTContract.");
-    //     require(copyrightHolders[_owner].proportion > 0, "not a CopyrightHolder.");
-    //     require(NFT1155(msg.sender).settlementContract() == address(this), "Not a matching NFT contract.");
-    //     nftContractAddress = msg.sender;
-    // }
-
-    // //caller: NFT1155
-    // function changeCopyrightHolder(address prev, uint256 _amount, address _new) public {
-    //     require(nftContractAddress == msg.sender, "not matching NFT contract!");
-    //     require(NFT1155(msg.sender).settlementContract() == address(this), "settlementContractAddress is not matching!");
-    //     // uint256 balance = NFT1155(msg.sender).balanceOf(_new, uint256(uint160(prev)));
-    //     // require( balance >= 1, "not a NFT owner!");
-    //     copyrightHolders[prev] = copyrightHolder(copyrightHolders[prev].proportion - _amount, 0);
-    //     copyrightHolders[_new] = copyrightHolder(copyrightHolders[_new].proportion + _amount, 0);
-    // }
-
-    /////////////////////////////////////////////
 
     event logBuyerInfo(address buyer, bytes32[2] songCid, uint256 amount);
     function buy() public payable {
@@ -60,13 +40,13 @@ contract SettlementContractExtra {
 
     event logRecieverInfo(address reciever, bytes32[2] songCid, uint256 amount);
     function settle() public {
+        require(registered[msg.sender] == address(0), "already registered FT. call settleByFT() function.");
         copyrightHolder memory caller = copyrightHolders[msg.sender];
         require(
             caller.proportion > 0 &&
             cumulativeSales - caller.count > 0 &&
             cumulativeSales < type(uint256).max
         );
-
         uint256 amount = price / 10000 * caller.proportion * (cumulativeSales - caller.count);
         copyrightHolders[msg.sender].count = cumulativeSales;
         payable(msg.sender).transfer(amount);
@@ -76,11 +56,12 @@ contract SettlementContractExtra {
     function settleByFT(address[] memory ftAddresses) public {
         uint256 amount = 0;
         for(uint i=0; i<ftAddresses.length; i++) {
-            address ftOwner = FT1155(ftAddresses[i]).owner();
-            require(registered[ftAddresses[i]], "not registered.");
-            require(copyrightHolders[ftOwner].proportion > 0, "not a copyrightHolder");
-            uint256 balance = FT1155(ftAddresses[i]).balanceOf(msg.sender, FT1155(ftAddresses[i]).tokenId());
-            amount += price / 10000 * balance * (cumulativeSales - copyrightHolders[ftOwner].count);
+            address ftMinter = FT1155(ftAddresses[i]).owner();
+            require(registered[ftMinter] == ftAddresses[i], "not registered.");
+            uint256 balance = FT1155(ftAddresses[i]).balanceOf(msg.sender, FT1155(ftAddresses[i]).TOKEN_ID());
+            require(balance >= 1, "not a FT owner.");
+            amount += price / 10000 * balance * (cumulativeSales - copyrightHolders[ftMinter].count);
+            copyrightHolders[ftMinter].count = cumulativeSales;
         }
         payable(msg.sender).transfer(amount);
         emit logRecieverInfo(msg.sender, songCid, amount);
