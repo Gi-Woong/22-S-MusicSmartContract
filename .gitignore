@@ -2,4 +2,3 @@ node_modules/
 
 contracts/artifacts/
 contracts/*.json
-*.sh
