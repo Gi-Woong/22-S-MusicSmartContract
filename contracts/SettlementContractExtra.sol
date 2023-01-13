@@ -19,7 +19,6 @@ contract SettlementContractExtra {
     }
     mapping (address => address) registered;
 
-
     function registerFtAddress() public {
         address ftMinter = FT1155(msg.sender).owner(); 
         require(copyrightHolders[ftMinter].proportion > 0, "not a copyrightHolder");

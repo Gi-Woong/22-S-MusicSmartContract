@@ -16,9 +16,9 @@ contract FT1155 is ERC1155 {
     }
 
     function sell(uint256 cnt, uint256 _price) public {
-        sellData memory _sellData = sellDatas[msg.sender];
-        require(cnt < balanceOf(msg.sender, TOKEN_ID) && cnt > 0, "cannot exceed owned token balance.");
-        require(_sellData.price * cnt > 10, "invalid inputs.");
+        // sellData memory _sellData = sellDatas[msg.sender];
+        require(cnt <= balanceOf(msg.sender, TOKEN_ID) && cnt > 0, "cannot exceed owned token balance.");
+        require(_price * cnt > 10, "invalid inputs.");
         sellDatas[msg.sender].sellcnt = cnt;
         sellDatas[msg.sender].price = _price;
         setApprovalForAll(address(this), true);
