@@ -3,7 +3,6 @@ pragma solidity ^0.8.2.0;
 import "../node_modules/@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
 contract SettlementContractExtra is ERC1155{
-    uint256 constant tokenId = 0;
     uint256 public price;
     uint256 public cumulativeSales = 0;
     address public owner;
@@ -41,7 +40,7 @@ contract SettlementContractExtra is ERC1155{
         return (keccak256(abi.encode(ids)) == keccak256Hash);
     }
 
-    event logRecieverInfo(address reciever, bytes32[2] songCid, uint256 amount);
+    event logRecieverInfo(address reciever, bytes32[2] songCid, uint256 amount) ;
     function settleSong(uint256[] memory ids) public {
         require(checkIds(ids), "incorrect id inputs!");
         uint256 count = copyrightHolders[msg.sender];
