@@ -1,0 +1,117 @@
+[vm]
+from: 0x5B3...eddC4
+to: SettlementContractExtra.(constructor)
+value: 0 wei
+data: 0x608...01388
+logs: 2
+hash: 0x2c4...84756
+status	true Transaction mined and execution succeed
+transaction hash	0x2c411ef0012d10fa42cc398bbff62089df8fc783a59b71f88d1becf7fa484756
+from	0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+to	SettlementContractExtra.(constructor)
+gas	3671906 gas
+transaction cost	3192961 gas 
+execution cost	3192961 gas 
+input	0x608...01388
+decoded input	{
+	"address[] _addresses": [
+		"0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+		"0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2"
+	],
+	"uint256[] _proportions": [
+		"5000",
+		"5000"
+	],
+	"bytes32[2] _songCid": [
+		"0x7465737400000000000000000000000000000000000000000000000000000000",
+		"0x7465737400000000000000000000000000000000000000000000000000000000"
+	],
+	"uint256 _price": "900000000000000"
+}
+decoded output	 - 
+logs	[
+	{
+		"from": "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8",
+		"topic": "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62",
+		"event": "TransferSingle",
+		"args": {
+			"0": "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+			"1": "0x0000000000000000000000000000000000000000",
+			"2": "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+			"3": "520786028573371803640530888255888666801131675076",
+			"4": "5000",
+			"operator": "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+			"from": "0x0000000000000000000000000000000000000000",
+			"to": "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+			"id": "520786028573371803640530888255888666801131675076",
+			"value": "5000"
+		}
+	},
+	{
+		"from": "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8",
+		"topic": "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62",
+		"event": "TransferSingle",
+		"args": {
+			"0": "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+			"1": "0x0000000000000000000000000000000000000000",
+			"2": "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
+			"3": "979192615699164691250836073164922764378935352498",
+			"4": "5000",
+			"operator": "0x5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+			"from": "0x0000000000000000000000000000000000000000",
+			"to": "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
+			"id": "979192615699164691250836073164922764378935352498",
+			"value": "5000"
+		}
+	}
+]
+val	0 wei
+
+
+
+
+
+
+
+_price = 1;
+_id = 979192615699164691250836073164922764378935352498
+cnt = 5000
+
+
+[vm]
+from: 0xAb8...35cb2
+to: SettlementContractExtra.sellFT(uint256,uint256,uint256) 0xd8b...33fa8
+value: 0 wei
+data: 0xca6...01388
+logs: 1
+hash: 0x9f4...deaec
+status	true Transaction mined and execution succeed
+transaction hash	0x9f40d42a859ee41a13177587e567db8ab813b6af3979babe1130105d3d8deaec
+from	0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+to	SettlementContractExtra.sellFT(uint256,uint256,uint256) 0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8
+gas	83319 gas
+transaction cost	72451 gas 
+execution cost	72451 gas 
+input	0xca6...01388
+decoded input	{
+	"uint256 _price": "1",
+	"uint256 _id": "979192615699164691250836073164922764378935352498",
+	"uint256 cnt": "5000"
+}
+decoded output	{}
+logs	[
+	{
+		"from": "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8",
+		"topic": "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31",
+		"event": "ApprovalForAll",
+		"args": {
+			"0": "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
+			"1": "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8",
+			"2": true,
+			"account": "0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2",
+			"operator": "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8",
+			"approved": true
+		}
+	}
+]
+val	0 wei
