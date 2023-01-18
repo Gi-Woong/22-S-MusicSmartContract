@@ -1,4 +1,5 @@
 node_modules/
-
-contracts/artifacts/
+Copy_*.sol
+contracts/**/artifacts/
 contracts/*.json
+*.sh
