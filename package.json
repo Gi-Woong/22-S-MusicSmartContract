@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.0",
-    "@remix-project/remixd": "^0.6.10"
+    "@remix-project/remixd": "^0.6.10",
+    "ganache-cli": "^6.12.2"
   }
 }
