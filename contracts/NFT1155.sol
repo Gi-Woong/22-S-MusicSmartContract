@@ -6,60 +6,75 @@ import "../node_modules/@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/utils/Strings.sol";
 
 // 곡당 발행
-// 원할 때 최초 발행 가능(?)
 contract NFT1155 is ERC1155 {
-    uint256 id = 1;
     address public settlementContract;
-    mapping(uint256 => metadata) public metadatas; // id -> 
-    struct metadata {
+    string public dir;
+    mapping(uint256 => sellData) public sellDatas;
+    struct sellData {
         uint256 price; // : must not be 0
-        address minter; // : minter is authorship
+        uint256 amount;
         bool sell;
     }
 
     function isCopyrightHolder() internal view returns(bool) {
         uint256 p;
         (p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender);
-        if (p > 0) { return true; }
-        else { return false; }
-    }
-    
-    //원할 때 민팅
-    //현재는 id 1개당 1개만 민팅 가능
-    function mint(uint256 price) public{
-        require(price > 0, "price must be upper than 0.");
-        require(metadatas[id].price == 0, "Already minted token or zero price.");
-        require(isCopyrightHolder(), "Not a copyrightHolder.");
-        metadatas[id].price = price;
-        _mint(msg.sender, id, 1, "");
-        metadatas[id].minter = msg.sender;
-        id++;
+        require(p > 0, "Not a CopyrightHolder.");
+        return true;
     }
 
-    //특정 id type만 판매할 수 있도록 설정할 수 있어야 함.(완료)
-    function sell(uint _id) public {
-        require(isCopyrightHolder(), "Not a copyrightHolder(token owner).");
-        metadatas[_id].sell = true;
+    function getMintable() internal view returns(uint256) {
+        uint256 p;
+        (p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender); 
+        return p;
+    }
+
+    function tokenId(address _owner) internal pure returns(uint256){
+        return uint256(uint160(_owner));
+    }
+    
+    function mint() public{
+        require(isCopyrightHolder(), "Not a copyrightHolder.");
+        require(balanceOf(msg.sender, tokenId(msg.sender))==0, "already minted token");
+        _mint(msg.sender, tokenId(msg.sender), getMintable(), "");   
+        // id++;
+    }
+
+    function sell(uint256 price, uint256 _amount) public {
+        require(isCopyrightHolder());
+        uint256 _id = tokenId(msg.sender);
+        sellDatas[_id].price = price;
+        sellDatas[_id].amount = _amount;
+        sellDatas[_id].sell = true;
         setApprovalForAll(address(this), true);
     }
 
-    function buy(address _owner, uint256 _id) public payable {
-        require(isApprovedForAll(_owner, address(this)) && metadatas[_id].sell, "Not Approved for selling.");
-        require(msg.value >= metadatas[_id].price, "value is insufficient.");
+    function buy(address _owner, uint256 _amount) public payable {
+        uint256 _id = tokenId(_owner);
+        require(isApprovedForAll(_owner, address(this)) && sellDatas[_id].sell, "Not Approved for selling.");
+        require(msg.value >= sellDatas[_id].price, "value is insufficient.");
         uint256 loyalty = msg.value / 10; //구매가의 10%를 로열티로 설정
         payable(_owner).transfer(msg.value - loyalty); //로열티 제외가 전송
-        payable(metadatas[_id].minter).transfer(loyalty); //로열티 전송
-        metadatas[id].price = msg.value; //구매가를 판매가로 지정
-        this.safeTransferFrom(_owner, msg.sender, _id, 1, "");
-        SettlementContractExtra(settlementContract).changeCopyrightHolder(_owner, _id, msg.sender);
-        metadatas[_id].sell = false;
-        setApprovalForAll(address(this), false);
+        payable(address((uint160(_id)))).transfer(loyalty); //로열티 전송
+        this.safeTransferFrom(_owner, msg.sender, _id, _amount, "");
+        SettlementContractExtra(settlementContract).changeCopyrightHolder(_owner, _amount, msg.sender);
+        if (sellDatas[_id].amount == 0) {
+            sellDatas[_id].sell = false;
+            setApprovalForAll(address(this), false);
+        }
     }
 
-    constructor(string memory dirCid, address _contract) ERC1155(string(abi.encodePacked(string("https://ipfs.io/ipfs/"), dirCid, string("/{id}.json")))) {
-        settlementContract = _contract;
-        require(isCopyrightHolder(), "Not a copyrightHolder.");
+    function uri(uint256 _id) override public view returns (string memory) {
+        return string(abi.encodePacked(dir, string("/"), string(abi.encode(_id)), string(".json")));
+    }
+
+    function register() public {
         SettlementContractExtra(settlementContract).registerNftContract(msg.sender); 
-        // mint();
+    }
+
+    constructor(string memory _dir, address _contract) ERC1155(string(abi.encodePacked(_dir, string("/{id}.json")))) {
+        settlementContract = _contract;
+        require(isCopyrightHolder());
+        dir = _dir;
     }
 }
