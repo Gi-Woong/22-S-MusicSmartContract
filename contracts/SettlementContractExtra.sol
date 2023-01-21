@@ -27,18 +27,7 @@ contract SettlementContractExtra {
         require(NFT1155(msg.sender).settlementContract() == address(this), "Not a matching NFT contract.");
         nftContractAddress = msg.sender;
     }
-
-    // function newme() public returns(address) {
-    //     nftContractAddress = address(new NFT1155("0xd9145CCE52D386f254917e481eB44e9943F39138", address(this)));
-    //     return nftContractAddress;
-    // }
-
-    // function createNFTContract(string memory dirCid) public {
-    //     require(copyrightHolders[msg.sender].proportion > 0, "Not a copyrightHolder");
-    //     require(!isNFTContractExist, "nftContract is already deployed");
-    //     new NFT1155(dirCid, address(this));
-    // }
-
+    
     //함수 실행자: NFT1155
     //seller: 토큰 판매자 주소
     function changeCopyrightHolder(address prevCopyrightHolder, uint256 id, address newCopyrightHolder) public {
@@ -96,4 +85,3 @@ contract SettlementContractExtra {
         require(copyrightHolders[owner].proportion > 0, "not a CopyrightHolder");
     }
 }
- 
