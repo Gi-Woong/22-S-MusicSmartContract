@@ -12,20 +12,18 @@ contract NFT1155 is ERC1155 {
     mapping(uint256 => sellData) public sellDatas;
     struct sellData {
         uint256 price; // : must not be 0
-        uint256 amount;
+        // uint256 amount;
         bool sell;
     }
 
     function isCopyrightHolder() internal view returns(bool) {
-        uint256 p;
-        (p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender);
+        (uint256 p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender);
         require(p > 0, "Not a CopyrightHolder.");
         return true;
     }
 
     function getMintable() internal view returns(uint256) {
-        uint256 p;
-        (p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender); 
+        (uint256 p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender); 
         return p;
     }
 
@@ -37,31 +35,28 @@ contract NFT1155 is ERC1155 {
         require(isCopyrightHolder(), "Not a copyrightHolder.");
         require(balanceOf(msg.sender, tokenId(msg.sender))==0, "already minted token");
         _mint(msg.sender, tokenId(msg.sender), getMintable(), "");   
-        // id++;
     }
 
-    function sell(uint256 price, uint256 _amount) public {
+    function sell(uint256 price) public {
         require(isCopyrightHolder());
         uint256 _id = tokenId(msg.sender);
         sellDatas[_id].price = price;
-        sellDatas[_id].amount = _amount;
+        // sellDatas[_id].amount = _amount;
         sellDatas[_id].sell = true;
         setApprovalForAll(address(this), true);
     }
 
-    function buy(address _owner, uint256 _amount) public payable {
+    function buy(address _owner) public payable {
         uint256 _id = tokenId(_owner);
         require(isApprovedForAll(_owner, address(this)) && sellDatas[_id].sell, "Not Approved for selling.");
         require(msg.value >= sellDatas[_id].price, "value is insufficient.");
         uint256 loyalty = msg.value / 10; //구매가의 10%를 로열티로 설정
         payable(_owner).transfer(msg.value - loyalty); //로열티 제외가 전송
         payable(address((uint160(_id)))).transfer(loyalty); //로열티 전송
-        this.safeTransferFrom(_owner, msg.sender, _id, _amount, "");
-        SettlementContractExtra(settlementContract).changeCopyrightHolder(_owner, _amount, msg.sender);
-        if (sellDatas[_id].amount == 0) {
-            sellDatas[_id].sell = false;
-            setApprovalForAll(address(this), false);
-        }
+        this.safeTransferFrom(_owner, msg.sender, _id, 1, "");
+        SettlementContractExtra(settlementContract).changeCopyrightHolder(_owner, _id, msg.sender);
+        sellDatas[_id].sell = false;
+        setApprovalForAll(address(this), false);
     }
 
     function uri(uint256 _id) override public view returns (string memory) {

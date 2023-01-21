@@ -30,6 +30,7 @@ contract SettlementContractExtra {
     
     //함수 실행자: NFT1155
     //seller: 토큰 판매자 주소
+    // 조건: 실행자가 
     function changeCopyrightHolder(address prevCopyrightHolder, uint256 id, address newCopyrightHolder) public {
         require(nftContractAddress == msg.sender, "not matching NFTcontract!");
         require(NFT1155(msg.sender).settlementContract() == address(this), "not matching NFT contract!");
@@ -38,8 +39,6 @@ contract SettlementContractExtra {
         copyrightHolders[prevCopyrightHolder] = copyrightHolder(0, 0);
         copyrightHolders[newCopyrightHolder] = temp;
     }
-
-    /////////////////////////////////////////////
 
     event logBuyerInfo(address buyer, bytes32[2] songCid, uint256 amount);
     function buy() public payable {
