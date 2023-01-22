@@ -5,71 +5,52 @@ import "./SettlementContractExtra.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/utils/Strings.sol";
 
-// 곡당 발행
+// 저작권자 1명당 1개 발행
 contract NFT1155 is ERC1155 {
     address public settlementContract;
+    address public minter;
+    address public owner;
     string public dir;
-    mapping(uint256 => sellData) public sellDatas;
-    struct sellData {
-        uint256 price; // : must not be 0
-        // uint256 amount;
-        bool sell;
-    }
+    uint256 public price;
+    uint256 public proportion;
+    //tokenId = 0;
 
-    function isCopyrightHolder() internal view returns(bool) {
-        (uint256 p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender);
-        require(p > 0, "Not a CopyrightHolder.");
-        return true;
-    }
-
-    function getMintable() internal view returns(uint256) {
-        (uint256 p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender); 
-        return p;
-    }
-
-    function tokenId(address _owner) internal pure returns(uint256){
-        return uint256(uint160(_owner));
-    }
-    
-    function mint() public{
-        require(isCopyrightHolder(), "Not a copyrightHolder.");
-        require(balanceOf(msg.sender, tokenId(msg.sender))==0, "already minted token");
-        _mint(msg.sender, tokenId(msg.sender), getMintable(), "");   
-    }
-
-    function sell(uint256 price) public {
+    function sell(uint256 _price) public {
+        require(balanceOf(msg.sender, 0) > 0, "not NFT owner!");
         require(isCopyrightHolder());
-        uint256 _id = tokenId(msg.sender);
-        sellDatas[_id].price = price;
-        // sellDatas[_id].amount = _amount;
-        sellDatas[_id].sell = true;
+        require(_price > 0, "price should larger than zero!");
+        price = _price;
         setApprovalForAll(address(this), true);
     }
 
-    function buy(address _owner) public payable {
-        uint256 _id = tokenId(_owner);
-        require(isApprovedForAll(_owner, address(this)) && sellDatas[_id].sell, "Not Approved for selling.");
-        require(msg.value >= sellDatas[_id].price, "value is insufficient.");
+    function buy() public payable {
+        require(msg.value >= price, "value is insufficient.");
         uint256 loyalty = msg.value / 10; //구매가의 10%를 로열티로 설정
-        payable(_owner).transfer(msg.value - loyalty); //로열티 제외가 전송
-        payable(address((uint160(_id)))).transfer(loyalty); //로열티 전송
-        this.safeTransferFrom(_owner, msg.sender, _id, 1, "");
-        SettlementContractExtra(settlementContract).changeCopyrightHolder(_owner, _id, msg.sender);
-        sellDatas[_id].sell = false;
+        payable(owner).transfer(msg.value - loyalty); //로열티 제외가 전송
+        payable(minter).transfer(loyalty); //로열티 전송
+        this.safeTransferFrom(owner, msg.sender, 0, 1, "");
+        SettlementContractExtra(settlementContract).changeCopyrightHolder(owner, msg.sender);
+        owner = msg.sender;
         setApprovalForAll(address(this), false);
     }
 
-    function uri(uint256 _id) override public view returns (string memory) {
-        return string(abi.encodePacked(dir, string("/"), string(abi.encode(_id)), string(".json")));
+    function isCopyrightHolder() public view returns(bool) {
+        (uint256 p, ) = SettlementContractExtra(settlementContract).copyrightHolders(msg.sender);
+        require(p > 0, "Not a CopyrightHolder.");
+        return true;
     }
 
     function register() public {
         SettlementContractExtra(settlementContract).registerNftContract(msg.sender); 
     }
 
-    constructor(string memory _dir, address _contract) ERC1155(string(abi.encodePacked(_dir, string("/{id}.json")))) {
+    constructor(string memory _dir, address _contract) ERC1155("") {
         settlementContract = _contract;
         require(isCopyrightHolder());
+        minter = msg.sender;
+        owner = msg.sender;
+        (proportion, ) = SettlementContractExtra(_contract).copyrightHolders(msg.sender);
+        _mint(msg.sender, 0, 1, "");
         dir = _dir;
     }
 }

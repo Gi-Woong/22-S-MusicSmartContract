@@ -9,35 +9,35 @@ contract SettlementContractExtra {
     address public owner;
     bytes32 public keccak256Hash;
     bytes32[2] public songCid;
-    address public nftContractAddress;
-
-    // TODO: 중복 정산 방지 해결책 마련 필요
     mapping (address => copyrightHolder) public copyrightHolders;
+    mapping (address => address) public nftContractAddresses; // minter -> NFT1155
     struct copyrightHolder {
         uint256 proportion;
         uint256 count;
     }
 
-    // TODO: 새로운 NFT contract를 생성해서 공격하는 경우를 막아야 함.
     // caller: NFT1155
-    function registerNftContract(address _owner) public {
-        address zeroAddress;
-        require(nftContractAddress == zeroAddress, "already registered NFTContract.");
-        require(copyrightHolders[_owner].proportion > 0, "not a CopyrightHolder.");
-        require(NFT1155(msg.sender).settlementContract() == address(this), "Not a matching NFT contract.");
-        nftContractAddress = msg.sender;
+    function registerNftContract(address minter) public {
+        require(NFT1155(msg.sender).minter() == minter, "Not NFT contract minter!"); // Function caller should be NFT1155.
+        require(copyrightHolders[minter].proportion > 0, "Not a copyright holder!"); // Minter should be in a mapping of copyrightHolders.
+        require(nftContractAddresses[minter] == address(0), "Already registered!");  // Contract should not be registered.
+        nftContractAddresses[minter] = msg.sender;
     }
     
     //함수 실행자: NFT1155
     //seller: 토큰 판매자 주소
-    // 조건: 실행자가 
-    function changeCopyrightHolder(address prevCopyrightHolder, uint256 id, address newCopyrightHolder) public {
-        require(nftContractAddress == msg.sender, "not matching NFTcontract!");
-        require(NFT1155(msg.sender).settlementContract() == address(this), "not matching NFT contract!");
-        require(NFT1155(msg.sender).balanceOf(newCopyrightHolder, id) >= 1, "not a NFT owner");
-        copyrightHolder memory temp = copyrightHolders[prevCopyrightHolder];
-        copyrightHolders[prevCopyrightHolder] = copyrightHolder(0, 0);
-        copyrightHolders[newCopyrightHolder] = temp;
+    function changeCopyrightHolder(address prev, address _new) public {
+        require(nftContractAddresses[NFT1155(msg.sender).minter()] == msg.sender, "not a proper NFT Contract");
+        require(NFT1155(msg.sender).balanceOf(_new, 0) >= 1, "not a NFT owner");
+        copyrightHolder[2] memory holders = [copyrightHolders[prev], copyrightHolders[_new]];
+        copyrightHolders[prev] = copyrightHolder(holders[0].proportion - NFT1155(msg.sender).proportion(), cumulativeSales);
+        copyrightHolders[_new] = copyrightHolder(holders[0].proportion + holders[1].proportion, cumulativeSales);
+        if (holders[0].count < cumulativeSales) {
+            payable(prev).transfer(price / 10000 * holders[0].proportion * (cumulativeSales - holders[0].count));
+        }
+        if (holders[1].count < cumulativeSales) {
+            payable(prev).transfer(price / 10000 * holders[1].proportion * (cumulativeSales - holders[1].count));
+        }
     }
 
     event logBuyerInfo(address buyer, bytes32[2] songCid, uint256 amount);
@@ -55,11 +55,11 @@ contract SettlementContractExtra {
     function settle() public {
         copyrightHolder memory caller = copyrightHolders[msg.sender];
         require(
-            caller.proportion > 0 &&
+            msg.sender == address(this) || 
+            (caller.proportion > 0 &&
             cumulativeSales - caller.count > 0 &&
-            cumulativeSales < type(uint256).max
+            cumulativeSales < type(uint256).max)
         );
-
         uint amount = price / 10000 * caller.proportion * (cumulativeSales - caller.count);
         copyrightHolders[msg.sender].count = cumulativeSales;
         payable(msg.sender).transfer(amount);
