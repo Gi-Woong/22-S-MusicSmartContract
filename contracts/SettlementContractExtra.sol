@@ -55,10 +55,9 @@ contract SettlementContractExtra {
     function settle() public {
         copyrightHolder memory caller = copyrightHolders[msg.sender];
         require(
-            msg.sender == address(this) || 
-            (caller.proportion > 0 &&
+            caller.proportion > 0 &&
             cumulativeSales - caller.count > 0 &&
-            cumulativeSales < type(uint256).max)
+            cumulativeSales < type(uint256).max
         );
         uint amount = price / 10000 * caller.proportion * (cumulativeSales - caller.count);
         copyrightHolders[msg.sender].count = cumulativeSales;
