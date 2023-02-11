@@ -7,12 +7,12 @@ let abiSettle;
 //index.html의 실행 위치에 따른 상대경로
 const importData = async () => {
   bytecodeSettle =
-    "./assets/contracts_SettlementContract_sol_SettlementContract.txt";
+    "./assets/SettlementContractExtra.txt";
   // bytecodeSettle = await fetch(
   //   "../assets/contracts_SettlementContract_sol_SettlementContract.txt"
   // ).then((txt) => txt.text());
   abiSettle = await fetch(
-    "./assets/contracts_SettlementContract_sol_SettlementContract.json"
+    "./assets/SettlementContractExtra.json"
   ).then((res) => res.json());
 };
 
@@ -60,7 +60,7 @@ export const deployContract = {
       args
     );
     console.log(
-      `Settlement contract deployed: ${deployedSettleContract.options.address}`
+      `Settlement Extra contract deployed: ${deployedSettleContract.options.address}`
     );
     return deployedSettleContract;
   },
@@ -74,7 +74,7 @@ export const settlementContract = {
       settlementAddr
     );
     settlementContract.instance.setProvider(metamask.web3Provider);
-    console.log("Settlement contract loaded:");
+    console.log("Settlement Extra contract loaded:");
     console.log(settlementContract.instance);
   },
   buy: async () => {
