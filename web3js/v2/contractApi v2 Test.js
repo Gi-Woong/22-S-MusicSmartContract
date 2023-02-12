@@ -1,3 +1,6 @@
+//sellerContract는 depracated되었음. 이전 컨트랙트에 대한 테스트가 적용된 js파일이므로 다시 뜯어고쳐야 함.
+// (실행 안되는게 당연)
+
 import { ca } from "./contractApi v2.js";
 import fs from "fs";
 

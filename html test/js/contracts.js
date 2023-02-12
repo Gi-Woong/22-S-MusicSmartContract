@@ -7,12 +7,12 @@ let abiSettle;
 //index.html의 실행 위치에 따른 상대경로
 const importData = async () => {
   bytecodeSettle =
-    "./assets/SettlementContractExtra.txt";
+    "./assets/SettlementContractExtra_copy.txt";
   // bytecodeSettle = await fetch(
   //   "../assets/contracts_SettlementContract_sol_SettlementContract.txt"
   // ).then((txt) => txt.text());
   abiSettle = await fetch(
-    "./assets/SettlementContractExtra.json"
+    "./assets/SettlementContractExtra_copy.json"
   ).then((res) => res.json());
 };
 
@@ -21,6 +21,7 @@ const metamask = new Metamask();
 export const init = async () => {
   await metamask.init();
   await importData();
+  console.log("importData executed.")
   // console.log(abiSeller);
   // console.log(abiSettle);
 };

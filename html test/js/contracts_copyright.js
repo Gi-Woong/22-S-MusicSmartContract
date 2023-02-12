@@ -71,7 +71,7 @@ export const deployContract = {
     return deployedSettleContract;
   },
   // deploy NFT1155 contract
-  NFT: async (dir, contract) => { //deployContract.
+  nft: async (dir, contract) => { //deployContract.
     const args = [dir, contract];
     const deployedNftContract = await deployContract.deploy(
       abiNFT,
@@ -130,7 +130,7 @@ export const settlementContract = {
       return settlementContract.instance.methods.keccak256Hash().call();
     },
     getOwner: async () => {
-      return settlementContract.instance.methods.owner().call();
+      return settlementContract.instance.methods.owner().call(); 
     },
     getPrice: async () => {
       return settlementContract.instance.methods.price().call();
