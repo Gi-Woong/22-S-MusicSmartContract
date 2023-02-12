@@ -7,11 +7,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider@1.2.0/dist/detect-provider.min.js"></script>
     <!-- <script src="./js/@metamask-detect-provider_v1.2.0_min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/web3@1.7.5/dist/web3.min.js"></script>
+    <script type="module" src="./js/contracts_copyright.js"></script>
     <script type="module" src="./js/contracts.js"></script>
     <script type="module" src="./js/service.js"></script>
     <title>Document</title>
   </head>
   <body>
+    <p>Settlement Extra Contract</p>
     <ol>
       <li>
         <button class="deployContracts">deploy SettlementContract</button>
@@ -19,6 +21,18 @@
       </li>
       <li><button class="buy">buy</button> 클릭</li>
       <li><button class="settle">settle</button> 클릭</li>
+    </ol>
+    <p>NFT Contract</p>
+    <ol>
+      <li>
+        <button class="deployNftContract">deploy NFT Contract</button>
+      </li>
+      <li>
+        <button class="nft_buy">buy</button>
+      </li>
+      <li>
+        <button class="nft_sell">sell</button>
+      </li>
     </ol>
   </body>
 </html>
