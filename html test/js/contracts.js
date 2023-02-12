@@ -7,12 +7,12 @@ let abiSettle;
 //index.html의 실행 위치에 따른 상대경로
 const importData = async () => {
   bytecodeSettle =
-    "./assets/SettlementContractExtra_copy.txt";
+    "./assets/SettlementContractExtra.txt";
   // bytecodeSettle = await fetch(
   //   "../assets/contracts_SettlementContract_sol_SettlementContract.txt"
   // ).then((txt) => txt.text());
   abiSettle = await fetch(
-    "./assets/SettlementContractExtra_copy.json"
+    "./assets/SettlementContractExtra.json"
   ).then((res) => res.json());
 };
 

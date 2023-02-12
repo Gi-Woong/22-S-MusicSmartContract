@@ -3,6 +3,8 @@ import Metamask from "./metamask.js";
 
 let bytecodeSettle;
 let abiSettle;
+let bytecodeNFT;
+let abiNFT;
 
 //index.html의 실행 위치에 따른 상대경로
 const importData = async () => {
@@ -73,6 +75,7 @@ export const deployContract = {
   // deploy NFT1155 contract
   nft: async (dir, contract) => { //deployContract.
     const args = [dir, contract];
+    console.log("in the nft : " + args);
     const deployedNftContract = await deployContract.deploy(
       abiNFT,
       bytecodeNFT,
@@ -193,39 +196,40 @@ export const settlementContract = {
 //NFT1155 contract의 method들과 state variable들에 접근하는 object  
 export const nftContract = {
   instance: null,
-  load: (settlementAddr) => {
+  load: (nftAddr) => {
+    console.log("nftAddr : " + nftAddr);
     nftContract.instance = new metamask.web3.eth.Contract(
-      abiSettle,
-      settlementAddr
+      abiNFT,
+      nftAddr
     );
+    console.log("nftContract.instance : " + nftContract.instance);
     nftContract.instance.setProvider(metamask.web3Provider);
     console.log("NFT contract loaded:");
     console.log(nftContract.instance);
   },
-  // add NFT1155's methods here.abiSettle
+  // add NFT1155's methods here.abiNFT
   buy: async () => {
     const value = await nftContract.instance.methods.price().call();
     return nftContract.instance.buy().send({
       from: metamask.account,
-      value,
     });
   },
-  sell: async () => {
+  sell: async (value) => {
     return nftContract.instance.methods.sell().send({
       from: metamask.account,
+      value
     });
   },
   isCopyrightHolder: () => {
-    return nftContract.instance.isCopyrightHolder().send({
+    return nftContract.instance.methods.isCopyrightHolder().send({
       from: metamask.account,
     });
   },
   register: () => {
-    return nftContract.instance.register().send({
+    return nftContract.instance.methods.register().send({
       from: metamask.account,
     });
   },
-
   variables: {
     // add NFT1155's state variable getters here.
     getMinter: async () => {
