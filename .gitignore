@@ -1,3 +1,5 @@
+.vscode/
+
 node_modules/
 Copy_*.sol
 contracts/**/artifacts/
