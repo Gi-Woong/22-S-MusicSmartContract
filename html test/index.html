@@ -6,32 +6,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider@1.2.0/dist/detect-provider.min.js"></script>
     <!-- <script src="./js/@metamask-detect-provider_v1.2.0_min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.5/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
     <script type="module" src="./js/contracts_copyright.js"></script>
     <script type="module" src="./js/contracts.js"></script>
     <script type="module" src="./js/service.js"></script>
     <title>Document</title>
   </head>
   <body>
-    <p>Settlement Extra Contract</p>
+    <h1>NFT Contract Test Page</h1>
     <ol>
       <li>
-        <button class="deployContracts">deploy SettlementContract</button>
-        클릭<br />
+        <h3>settlement contract 발행:</h3>
+        <table border="0">
+          <tr>
+            <td>
+              <label for="name">_addresses: </label>
+            </td>
+            <td>
+              <input
+                type="text"
+                class="settlement_deploy"
+                name="name"
+                required
+                size="50"
+                value=""
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="name">_proportions: </label></td>
+            <td>
+              <input
+                type="text"
+                class="settlement_deploy"
+                name="name"
+                required
+                size="50"
+                value=""
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="name">_songCid: </label></td>
+            <td>
+              <input
+                type="text"
+                class="settlement_deploy"
+                name="name"
+                required
+                size="50"
+                value=""
+              />
+            </td>
+          </tr>
+          <tr>
+            <td><label for="name">_price: </label></td>
+            <td>
+              <input
+                type="text"
+                class="settlement_deploy"
+                name="name"
+                required
+                size="50"
+                value=""
+              />
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <button class="deploySettlementContract">
+                deploy Settlement Contract
+              </button>
+            </td>
+          </tr>
+        </table>
+        <ul>
+          <br />
+        </ul>
       </li>
-      <li><button class="buy">buy</button> 클릭</li>
-      <li><button class="settle">settle</button> 클릭</li>
-    </ol>
-    <p>NFT Contract</p>
-    <ol>
       <li>
-        <button class="deployNftContract">deploy NFT Contract</button>
+        <h3>NFT 발행</h3>
+
+        <table>
+          <tr>
+            <td><label for="name">dir: </label></td>
+            <td>
+              <input
+                type="text"
+                class="nft_deploy"
+                name="name"
+                required
+                size="50"
+                value=""
+                placeholder="NFT 메타데이더 IPFS CID"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="name">_contract: </label>
+            </td>
+            <td>
+              <input
+                type="text"
+                class="nft_deploy"
+                name="name"
+                required
+                size="50"
+                value=""
+                placeholder="SettlementContract Address"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <button class="deployNftContract">deploy NFT Contract</button>
+            </td>
+          </tr>
+        </table>
       </li>
+
+      <br />
       <li>
-        <button class="nft_buy">buy</button>
-      </li>
-      <li>
+        <label for="name">NFT 판매등록:</label>
+        <input
+          type="text"
+          id="nft_sell"
+          name="name"
+          required
+          size="10"
+          value="10000000"
+        />
         <button class="nft_sell">sell</button>
+      </li>
+      <li>
+        <label for="name">NFT 구매:</label>
+        <input
+          type="text"
+          id="nft_buy"
+          name="name"
+          required
+          size="10"
+          value="10000000"
+        />
+        <button class="nft_buy">buy</button>
       </li>
     </ol>
   </body>
